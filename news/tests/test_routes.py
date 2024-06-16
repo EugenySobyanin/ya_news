@@ -24,6 +24,7 @@ class TestRoutes(TestCase):
         )
 
     def test_pages_availability(self):
+        """Доступность страниц анонимному пользователю."""
         # Создаём набор тестовых данных - кортеж кортежей.
         # Каждый вложенный кортеж содержит два элемента:
         # имя пути и позиционные аргументы для функции reverse().
@@ -52,6 +53,8 @@ class TestRoutes(TestCase):
                 
                 
     def test_availability_for_comment_edit_and_delete(self):
+        """Страницы удаление и редактирования для автора и читателя комментария."""
+        # был вариант сделать как тест выше
         users_statuses = (
             (self.author, HTTPStatus.OK),
             (self.reader, HTTPStatus.NOT_FOUND),
