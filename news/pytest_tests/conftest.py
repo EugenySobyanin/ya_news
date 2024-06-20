@@ -15,7 +15,7 @@ import pytest
 
 from django.test.client import Client
 
-from models import Comment, News
+from news.models import Comment, News
 
 @pytest.fixture
 def author(django_user_model):
