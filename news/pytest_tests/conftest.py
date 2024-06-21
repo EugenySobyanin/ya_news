@@ -1,21 +1,15 @@
-"""
-Какие фикстуры понадобятся для тестирования?
-1. test_routes.py
-    1. Главная страница доступна анонимному пользователю.
-        - фикстура анонимного клиента
-    2. Страница отдельной новости доступна анонимному пользователю.
-        - фикстура анонимного пользователя
-    3. Страницы удаления и редактирования комментария доступны автору комментария
-        - пользователь (автор)
-        - комментарий
-    4. 
-"""
+from datetime import datetime, timedelta
 
 import pytest
 
+from django.conf import settings
 from django.test.client import Client
+from django.utils import timezone
+from django.urls import reverse
 
 from news.models import Comment, News
+
+
 
 @pytest.fixture
 def author(django_user_model):
@@ -61,3 +55,37 @@ def comment(news, author):
 @pytest.fixture
 def comment_id(comment):
     return (comment.id, )
+
+
+@pytest.fixture
+def all_news():
+    today = datetime.today()
+    all_news = [
+        News(
+            title=f'Новость {index}',
+            text='текст',
+            date=today - timedelta(days=index)
+            )
+        for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)
+    ]
+    News.objects.bulk_create(all_news)
+    
+@pytest.fixture
+def url_home():
+    return reverse('news:home')
+
+@pytest.fixture
+def url_detail(news_id):
+    return reverse('news:detail', args=news_id)
+
+@pytest.fixture
+def all_comments(author, news):
+    now = timezone.now()
+    for index in range(10):
+        comment = Comment.objects.create(
+            news=news, author=author, text=f'Tекст {index}',
+        )
+
+        comment.created = now + timedelta(days=index)
+        comment.save()
+    return news.comment_set.all()

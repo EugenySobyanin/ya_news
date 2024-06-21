@@ -97,6 +97,7 @@ def test_pages_availability(name, args, client):
     response = client.get(url)
     assert response.status_code == HTTPStatus.OK
 
+
 @pytest.mark.django_db
 @pytest.mark.parametrize(
     'parametrized_client, expected_status',
@@ -122,6 +123,7 @@ def test_availability_for_comment_edit_and_delete(parametrized_client,
     url = reverse(name, args=args)
     response = parametrized_client.get(url)
     assert response.status_code == expected_status
+
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
