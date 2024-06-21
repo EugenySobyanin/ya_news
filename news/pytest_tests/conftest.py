@@ -53,3 +53,7 @@ def comment(news, author):
         text="Текст комментария."
     )
     return comment
+
+@pytest.fixture
+def comment_id(comment):
+    return (comment.id, )
