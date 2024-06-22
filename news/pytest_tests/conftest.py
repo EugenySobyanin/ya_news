@@ -4,7 +4,6 @@ from django.conf import settings
 from django.test.client import Client
 from django.utils import timezone
 from django.urls import reverse
-
 import pytest
 
 from news.models import Comment, News
@@ -44,11 +43,6 @@ def news():
 
 
 @pytest.fixture
-def news_id(news):
-    return (news.id, )
-
-
-@pytest.fixture
 def all_news():
     today = datetime.today()
     all_news = [
@@ -63,18 +57,13 @@ def all_news():
 
 
 @pytest.fixture
-def comment(news, author, comment_text):
+def comment(news, author):
     comment = Comment.objects.create(
         news=news,
         author=author,
         text='Текст комментария.'
     )
     return comment
-
-
-@pytest.fixture
-def comment_id(comment):
-    return (comment.id, )
 
 
 @pytest.fixture
@@ -87,7 +76,6 @@ def all_comments(author, news):
 
         comment.created = now + timedelta(days=index)
         comment.save()
-    return news.comment_set.all()
 
 
 @pytest.fixture
@@ -96,25 +84,15 @@ def url_home():
 
 
 @pytest.fixture
-def url_detail(news_id):
-    return reverse('news:detail', args=news_id)
+def url_detail(news):
+    return reverse('news:detail', args=(news.id, ))
 
 
 @pytest.fixture
-def delete_url(comment_id):
-    return reverse('news:delete', args=comment_id)
+def delete_url(comment):
+    return reverse('news:delete', args=(comment.id, ))
 
 
 @pytest.fixture
-def edit_url(comment_id):
-    return reverse('news:edit', args=comment_id)
-
-
-@pytest.fixture
-def comment_text():
-    return 'Другой текст комментария.'
-
-
-@pytest.fixture
-def form_data(comment_text):
-    return {'text': comment_text}
+def edit_url(comment):
+    return reverse('news:edit', args=(comment.id, ))
