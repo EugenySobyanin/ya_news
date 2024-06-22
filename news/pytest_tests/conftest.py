@@ -43,12 +43,13 @@ def news():
 def news_id(news):
     return (news.id, )
 
+
 @pytest.fixture
-def comment(news, author):
+def comment(news, author, comment_text):
     comment = Comment.objects.create(
         news=news,
         author=author,
-        text="Текст комментария."
+        text='Текст комментария.'
     )
     return comment
 
@@ -89,3 +90,20 @@ def all_comments(author, news):
         comment.created = now + timedelta(days=index)
         comment.save()
     return news.comment_set.all()
+
+@pytest.fixture
+def comment_text():
+    return 'Другой текст комментария.'
+
+
+@pytest.fixture
+def form_data(comment_text):
+    return {'text': comment_text}
+
+@pytest.fixture
+def delete_url(comment_id):
+    return reverse('news:delete', args=comment_id)
+
+@pytest.fixture
+def edit_url(comment_id):
+    return reverse('news:edit', args=comment_id)
