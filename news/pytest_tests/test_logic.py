@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from random import choice
 
 import pytest
 from pytest_django.asserts import assertFormError, assertRedirects
@@ -33,7 +34,7 @@ def test_user_can_create_comment(author_client, url_detail,
 def test_user_cant_use_bad_words(author_client, url_detail):
     """Пользователь не может использовать запрещенные слова в комментраии."""
     comment_count = Comment.objects.count()
-    bad_words_data = {'text': f'Какой-то текст, {BAD_WORDS[0]}, еще текст'}
+    bad_words_data = {'text': f'Текст, {choice(BAD_WORDS)}, еще текст'}
     response = author_client.post(url_detail, data=bad_words_data)
     assert Comment.objects.count() == comment_count
     assertFormError(response, 'form', 'text', errors=WARNING)
@@ -48,14 +49,14 @@ def test_author_can_delete_comment(author_client, comment,
     assert Comment.objects.count() == comment_count - 1
 
 
-# @pytest.mark.django_db
-# def test_user_cant_delete_comment_of_another_user(comment, delete_url, ////////////////// вопрос!
-#                                                   not_author_client):
-#     """Пользователь не может удалить чужой комментарий."""
-#     Comment.objects.all().delete()
-#     response = not_author_client.delete(delete_url)
-#     assert response.status_code == HTTPStatus.NOT_FOUND
-#     assert Comment.objects.count() == 1
+@pytest.mark.django_db
+def test_user_cant_delete_comment_of_another_user(comment, delete_url,
+                                                  not_author_client):
+    """Пользователь не может удалить чужой комментарий."""
+    comment_count = Comment.objects.count()
+    response = not_author_client.delete(delete_url)
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert Comment.objects.count() == comment_count
 
 
 def test_author_can_edit_comment(author_client, comment, author,
