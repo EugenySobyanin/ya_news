@@ -77,7 +77,7 @@ def test_user_cant_edit_comment_of_another_user(not_author_client, comment,
     form_data = {'text': 'Изменнный текст.'}
     response = not_author_client.post(edit_url, data=form_data)
     assert response.status_code == HTTPStatus.NOT_FOUND
-    comment_from_bd = Comment.objects.get()
+    comment_from_bd = Comment.objects.get(id=comment.id)
     assert comment_from_bd.text == comment.text
     assert comment_from_bd.author == author
     assert comment_from_bd.news == news
